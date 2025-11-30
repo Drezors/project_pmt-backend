@@ -13,8 +13,8 @@
 ### 1. Cloner les dépôts
 
 ```bash
-git clone 
-git clone 
+git clone https://github.com/Drezors/project_pmt-backend.git
+git clone https://github.com/Drezors/project_pmt-frontend.git
 ```
 
 ### 2. Organiser la structure du projet
@@ -28,7 +28,7 @@ git clone
 ### 3. Aller dans le répertoire backend
 
 ```bash
-cd visiplus_project_pmt-backend
+cd project_pmt-backend
 ```
 
 ### 4. Lancer les conteneurs
