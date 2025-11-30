@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8
+    ports:
+      - "1307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tpm_database
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tpm-network
+
+  adminer:
+    image: adminer
+    ports:
+      - "8000:8080"
+    networks:
+      - tpm-network
+
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - tpm-network
+
+  frontend:
+    build:
+      context: ../project_pmt-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    networks:
+      - tpm-network
+
+networks:
+  tpm-network:
+    driver: bridge

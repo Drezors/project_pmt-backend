@@ -1,0 +1,33 @@
+-- Insert additional data in User
+INSERT INTO User (username, email, password) VALUES
+('dev_user', 'dev@example.com', 'securepassword'),
+('qa_user', 'qa@example.com', 'securepassword'),
+('guest_user', 'guest@example.com', 'securepassword');
+
+-- Insert additional data in Project
+INSERT INTO Project (name, description, due_date, admin_id) VALUES
+('Project Gamma', 'Migration vers la nouvelle plateforme', '2024-03-15', 4),
+('Project Delta', 'Refonte UI/UX', '2024-04-01', 1);
+
+-- Insert additional data in Task
+INSERT INTO Task (name, description, due_date, priority, status, project_id, assigned_user_id) VALUES
+('Tâche 4', 'Préparer le plan de migration', '2024-03-05', 'High', 'To Do', 3, 4),
+('Tâche 5', 'Revoir la charte graphique', '2024-03-20', 'Medium', 'In Progress', 4, 5),
+('Tâche 6', 'Déployer sur l\'environnement de test', '2024-03-25', 'High', 'To Do', 3, NULL),
+('Tâche 7', 'Créer la documentation utilisateur', '2024-04-05', 'Low', 'To Do', 4, 6);
+
+-- Insert additional data in project_members
+INSERT INTO project_members (project_id, user_id, role) VALUES
+(3, 4, 'ADMIN'),
+(3, 5, 'MEMBER'),
+(3, 6, 'OBSERVER'),
+(4, 1, 'ADMIN'),
+(4, 5, 'MEMBER'),
+(4, 6, 'MEMBER');
+
+-- Insert additional notification data
+INSERT INTO Notification (message, is_read, user_id) VALUES
+('Une nouvelle tâche vous a été assignée.', FALSE, 4),
+('Le projet "Gamma" a été mis à jour.', FALSE, 5),
+('Votre rôle dans le projet "Delta" a été modifié.', TRUE, 6),
+('La tâche "Déployer sur l\'environnement de test" a été complétée.', FALSE, 5);
