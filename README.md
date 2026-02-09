@@ -28,7 +28,7 @@ git clone
 ### 3. Aller dans le répertoire backend
 
 ```bash
-cd visiplus_project_pmt-backend
+cd project_pmt-backend
 ```
 
 ### 4. Lancer les conteneurs
@@ -55,6 +55,6 @@ http://localhost:8080/swagger-ui.html
 Le projet inclut :
 
 - Backend et frontend dockerisés
-- Pipelines GitLab CI/CD pour :
+- Pipelines GitHub Action CI/CD pour :
   - Construire les images Docker
   - Les pousser sur Docker Hub
