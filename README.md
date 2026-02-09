@@ -13,8 +13,8 @@
 ### 1. Cloner les dépôts
 
 ```bash
-git clone 
-git clone 
+git clone https://github.com/Drezors/project_pmt-backend.git
+git clone https://github.com/Drezors/project_pmt-frontend.git
 ```
 
 ### 2. Organiser la structure du projet
