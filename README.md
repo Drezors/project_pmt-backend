@@ -58,3 +58,14 @@ Le projet inclut :
 - Pipelines GitHub Action CI/CD pour :
   - Construire les images Docker
   - Les pousser sur Docker Hub
+
+## Résultats des tests et couverture
+
+Les résultats des tests unitaires et la couverture de code sont générés automatiquement par Maven/Jacoco et se trouvent dans le dossier target du projet backend : `project_pmt-backend/target/site/jacoco/index.html`.
+
+
+Pour faciliter la lecture, une **capture d'écran de la couverture** est également incluse dans le repo :
+
+![rapport_de_couverture_code_backend_jacoco.png](rapport_de_couverture_code_backend_jacoco.png)
+
+Ouvrez `index.html` dans un navigateur pour naviguer dans le rapport complet avec toutes les classes, méthodes et branches couvertes.
