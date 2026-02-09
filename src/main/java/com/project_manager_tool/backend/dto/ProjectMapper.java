@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class ProjectMapper {
 
     @Autowired
-    private UserMapper userMapper;
+    UserMapper userMapper;
 
     public ProjectDto toDto(Project project) {
         if (project == null) return null;
