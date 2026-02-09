@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17
 
       - name: Build with Maven
         run: mvn clean install
@@ -26,8 +26,8 @@ jobs:
 #      - name: Run tests
 #        run: mvn test
 
-      - name: Generate coverage report
-        run: mvn jacoco:report
+#      - name: Generate coverage report
+#        run: mvn jacoco:report
 
       - name: Archive coverage report
         uses: actions/upload-artifact@v4
