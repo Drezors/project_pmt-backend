@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectMemberDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.dto</a> &gt; <span class="el_source">ProjectMemberDto.java</span></div><h1>ProjectMemberDto.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.dto;
+
+import com.project_manager_tool.backend.models.ProjectMember;
+
+<span class="fc" id="L5">public class ProjectMemberDto {</span>
+    private Integer id;
+    private ProjectMember.Role role;
+    private UserDto user;
+
+    public Integer getId() {
+<span class="nc" id="L11">        return id;</span>
+    }
+
+    public void setId(Integer id) {
+<span class="fc" id="L15">        this.id = id;</span>
+<span class="fc" id="L16">    }</span>
+
+    public ProjectMember.Role getRole() {
+<span class="fc" id="L19">        return role;</span>
+    }
+
+    public void setRole(ProjectMember.Role role) {
+<span class="fc" id="L23">        this.role = role;</span>
+<span class="fc" id="L24">    }</span>
+
+    public UserDto getUser() {
+<span class="fc" id="L27">        return user;</span>
+    }
+
+    public void setUser(UserDto user) {
+<span class="fc" id="L31">        this.user = user;</span>
+<span class="fc" id="L32">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

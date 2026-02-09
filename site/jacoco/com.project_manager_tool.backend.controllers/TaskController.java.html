@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.controllers</a> &gt; <span class="el_source">TaskController.java</span></div><h1>TaskController.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.controllers;
+
+import com.project_manager_tool.backend.dto.request.TaskRequestDto;
+import com.project_manager_tool.backend.models.Task;
+import com.project_manager_tool.backend.services.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/projects&quot;)
+<span class="fc" id="L12">public class TaskController {</span>
+
+    @Autowired
+    private TaskService taskService;
+
+    @PostMapping(&quot;/{projectId}/create-task&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public int create(
+            @PathVariable(&quot;projectId&quot;) int projectId,
+            @RequestParam(&quot;creatorId&quot;) int creatorId,
+            @RequestBody TaskRequestDto taskRequestDto
+    ) {
+<span class="fc" id="L24">        return taskService.create(projectId, creatorId, taskRequestDto);</span>
+    }
+
+    @PatchMapping(&quot;/tasks/{taskId}/status&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateTaskStatus(@PathVariable int taskId,
+                                 @RequestParam int memberId,
+                                 @RequestBody Task.Status newStatus) {
+<span class="fc" id="L32">        taskService.updateStatus(taskId, memberId, newStatus);</span>
+<span class="fc" id="L33">    }</span>
+
+    @PatchMapping(&quot;/tasks/{taskId}/priority&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateTaskPriority(@PathVariable int taskId,
+                                   @RequestParam int adminId,
+                                   @RequestBody Task.Priority newPriority) {
+<span class="fc" id="L40">        taskService.updatePriority(taskId, adminId, newPriority);</span>
+<span class="fc" id="L41">    }</span>
+
+    @DeleteMapping(&quot;/tasks/{taskId}&quot;)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTask(@PathVariable int taskId,
+                           @RequestParam int adminId) {
+<span class="fc" id="L47">        taskService.deleteTask(taskId, adminId);</span>
+<span class="fc" id="L48">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

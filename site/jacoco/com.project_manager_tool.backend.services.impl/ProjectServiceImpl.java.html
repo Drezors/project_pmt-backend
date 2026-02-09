@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.services.impl</a> &gt; <span class="el_source">ProjectServiceImpl.java</span></div><h1>ProjectServiceImpl.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.services.impl;
+
+
+import com.project_manager_tool.backend.dao.ProjectMemberRepository;
+import com.project_manager_tool.backend.dao.ProjectRepository;
+import com.project_manager_tool.backend.dao.UserRepository;
+import com.project_manager_tool.backend.dto.ProjectDto;
+import com.project_manager_tool.backend.dto.ProjectMapper;
+import com.project_manager_tool.backend.dto.ProjectSummaryDto;
+import com.project_manager_tool.backend.dto.request.ProjectMemberCreation;
+import com.project_manager_tool.backend.dto.request.ProjectUpdateRequestDto;
+import com.project_manager_tool.backend.exceptions.EntityDontExistException;
+import com.project_manager_tool.backend.models.Project;
+import com.project_manager_tool.backend.models.ProjectMember;
+import com.project_manager_tool.backend.models.User;
+import com.project_manager_tool.backend.services.NotificationService;
+import com.project_manager_tool.backend.services.ProjectMemberService;
+import com.project_manager_tool.backend.services.ProjectService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
+@Service
+<span class="fc" id="L30">public class ProjectServiceImpl implements ProjectService {</span>
+
+    @Autowired ProjectRepository projectRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    ProjectMemberRepository projectMemberRepository;
+
+    @Autowired
+    UserServiceImpl userService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private ProjectMapper projectMapper;
+
+<span class="fc" id="L49">    public void setProjectRepository(ProjectRepository repo) { this.projectRepository = repo; }</span>
+<span class="fc" id="L50">    public void setProjectMemberRepository(ProjectMemberRepository repo) { this.projectMemberRepository = repo; }</span>
+<span class="fc" id="L51">    public void setUserRepository(UserRepository repo) { this.userRepository = repo; }</span>
+<span class="fc" id="L52">    public void setNotificationService(NotificationService service) { this.notificationService = service; }</span>
+<span class="fc" id="L53">    public void setUserService(UserServiceImpl service) { this.userService = service; }</span>
+<span class="fc" id="L54">    public void setProjectMapper(ProjectMapper mapper) { this.projectMapper = mapper; }</span>
+
+
+    @Override
+    public int create(int ownerId, Project project) {
+<span class="fc" id="L59">        User owner = userService.findById(ownerId);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (owner == null) {</span>
+<span class="fc" id="L61">            throw new IllegalArgumentException(&quot;Owner with ID &quot; + ownerId + &quot; not found.&quot;);</span>
+        }
+
+<span class="fc" id="L64">        project.setOwner(owner);</span>
+
+<span class="fc" id="L66">        Project newProject = projectRepository.save(project);</span>
+
+<span class="fc" id="L68">        ProjectMember newMember = new ProjectMember();</span>
+<span class="fc" id="L69">        newMember.setProject(newProject);</span>
+<span class="fc" id="L70">        newMember.setUser(owner);</span>
+<span class="fc" id="L71">        newMember.setRole(ProjectMember.Role.ADMIN);</span>
+
+<span class="fc" id="L73">        projectMemberRepository.save(newMember);</span>
+
+<span class="fc" id="L75">        return newProject.getId();</span>
+    }
+
+    @Override
+    public int createProjectMember(int projectId, int projectAdminId, ProjectMemberCreation newMemberUserId) {
+        // Vérification si l'admin existe bien et a le rôle ADMIN
+<span class="fc" id="L81">        Optional&lt;ProjectMember&gt; adminMember = projectMemberRepository</span>
+<span class="fc" id="L82">                .findByProjectIdAndUserId(projectId, projectAdminId);</span>
+
+<span class="pc bpc" id="L84" title="1 of 4 branches missed.">        if (adminMember.isEmpty() || adminMember.get().getRole() != ProjectMember.Role.ADMIN) {</span>
+<span class="fc" id="L85">            throw new IllegalStateException(&quot;Only an admin can add new project members&quot;);</span>
+        }
+
+        // Vérification si le membre existe déjà dans le projet
+<span class="fc" id="L89">        boolean isAlreadyMember = projectMemberRepository</span>
+<span class="fc" id="L90">                .findByProjectIdAndUserId(projectId, newMemberUserId.getUserId())</span>
+<span class="fc" id="L91">                .isPresent();</span>
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (isAlreadyMember) {</span>
+<span class="fc" id="L94">            throw new IllegalStateException(&quot;User is already a member of this project&quot;);</span>
+        }
+
+        // Création du nouveau membre si la vérification est OK
+<span class="fc" id="L98">        ProjectMember newMember = new ProjectMember();</span>
+<span class="fc" id="L99">        newMember.setRole(newMemberUserId.getRole());</span>
+
+        // Associer le projet
+<span class="fc" id="L102">        Project project = projectRepository.findById(projectId)</span>
+<span class="fc" id="L103">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Project not found&quot;));</span>
+
+<span class="fc" id="L105">        newMember.setProject(project);</span>
+
+        // Associer l'utilisateur
+<span class="fc" id="L108">        User user = userRepository.findById(newMemberUserId.getUserId())</span>
+<span class="pc" id="L109">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;User not found&quot;));</span>
+
+<span class="fc" id="L111">        newMember.setUser(user);</span>
+
+<span class="fc" id="L113">        projectMemberRepository.save(newMember);</span>
+
+
+<span class="fc" id="L116">        notificationService.sendNotificationToUserId(</span>
+<span class="fc" id="L117">                newMember.getUser().getId(),</span>
+<span class="fc" id="L118">                &quot;Vous avez été ajouté au projet ID &quot; + projectId + &quot; en tant que &quot; + newMember.getRole() + &quot;.&quot;</span>
+        );
+
+<span class="fc" id="L121">        return newMember.getId();</span>
+    }
+
+
+
+    @Override
+    public List&lt;ProjectMember&gt; findAll(int memberId) {
+        // Vérifie si l'utilisateur avec memberId existe
+<span class="fc" id="L129">        User user = userService.findById(memberId);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (user == null) {</span>
+<span class="fc" id="L131">            throw new IllegalArgumentException(&quot;User with ID &quot; + memberId + &quot; not found.&quot;);</span>
+        }
+
+        // Récupérer les ProjectMember associés à cet utilisateur
+<span class="fc" id="L135">        List&lt;ProjectMember&gt; filteredMembers = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (ProjectMember projectMember : projectMemberRepository.findAll()) {</span>
+<span class="pc bpc" id="L137" title="1 of 4 branches missed.">            if (projectMember.getUser() != null &amp;&amp; projectMember.getUser().getId().equals(memberId)) {</span>
+<span class="fc" id="L138">                filteredMembers.add(projectMember);</span>
+            }
+<span class="fc" id="L140">        }</span>
+
+<span class="fc" id="L142">        return filteredMembers;</span>
+    }
+
+    @Override
+    public List&lt;ProjectSummaryDto&gt; findAllByUserId(int userId) {
+        // Récupère tous les ProjectMember associés à un userId
+<span class="nc" id="L148">        List&lt;ProjectMember&gt; projectMembers = projectMemberRepository.findByUserId(userId);</span>
+
+<span class="nc" id="L150">        return projectMembers.stream()</span>
+<span class="nc" id="L151">                .map(projectMapper::toSummaryDto)</span>
+<span class="nc" id="L152">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public ProjectDto getProjectById(int projectId, int userId) {
+        // Vérification si le projet existe
+<span class="fc" id="L158">        Project project = projectRepository.findById(projectId)</span>
+<span class="fc" id="L159">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Project not found&quot;));</span>
+
+        // Vérification si l'utilisateur est membre du projet
+<span class="fc" id="L162">        boolean isMember = project.getProjectMembers().stream()</span>
+<span class="pc" id="L163">                .anyMatch(member -&gt; member.getUser().getId().equals(userId));</span>
+
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (!isMember) {</span>
+<span class="fc" id="L166">            throw new IllegalStateException(&quot;User does not have access to this project&quot;);</span>
+        }
+
+        // Si tout est bon, on convertit le projet en DTO via le mapper
+<span class="nc" id="L170">        return projectMapper.toDto(project);</span>
+    }
+
+    @Override
+    public void deleteProjectMember(int projectId, int userId, int deleterId) {
+        // ✅ Vérifie si le ProjectMember qui fait la suppression existe
+<span class="fc" id="L176">        ProjectMember deleter = projectMemberRepository</span>
+<span class="fc" id="L177">                .findByProjectIdAndUserId(projectId, deleterId)</span>
+<span class="pc" id="L178">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Vous n'êtes pas membre de ce projet&quot;));</span>
+
+        // ✅ Vérifie si le ProjectMember à supprimer existe
+<span class="fc" id="L181">        ProjectMember memberToDelete = projectMemberRepository</span>
+<span class="fc" id="L182">                .findByProjectIdAndUserId(projectId, userId)</span>
+<span class="fc" id="L183">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Le membre à supprimer n'existe pas&quot;));</span>
+
+        // ✅ Seul un ADMIN peut supprimer un autre membre
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        if (deleter.getRole() != ProjectMember.Role.ADMIN) {</span>
+<span class="nc" id="L187">            throw new IllegalStateException(&quot;Seul un admin peut supprimer un membre&quot;);</span>
+        }
+
+        // ✅ Si le membre à supprimer est ADMIN, seul le créateur du projet peut le supprimer
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (memberToDelete.getRole() == ProjectMember.Role.ADMIN) {</span>
+<span class="fc" id="L192">            Project project = projectRepository.findById(projectId)</span>
+<span class="pc" id="L193">                    .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Projet introuvable&quot;));</span>
+
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            if (project.getOwner().getId() != deleter.getUser().getId()) {</span>
+<span class="fc" id="L196">                throw new IllegalStateException(&quot;Seul le créateur du projet peut supprimer un admin&quot;);</span>
+            }
+        }
+
+        // ✅ Suppression de l'utilisateur
+<span class="fc" id="L201">        projectMemberRepository.delete(memberToDelete);</span>
+<span class="fc" id="L202">    }</span>
+
+    @Override
+    public void updateProject(int projectId, int adminId, ProjectUpdateRequestDto request) {
+<span class="fc" id="L206">        Project project = projectRepository.findById(projectId)</span>
+<span class="fc" id="L207">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Projet introuvable&quot;));</span>
+
+<span class="fc" id="L209">        ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, adminId)</span>
+<span class="pc" id="L210">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Membre non trouvé&quot;));</span>
+
+<span class="fc bfc" id="L212" title="All 2 branches covered.">        if (member.getRole() != ProjectMember.Role.ADMIN) {</span>
+<span class="fc" id="L213">            throw new IllegalStateException(&quot;Seuls les admins peuvent modifier un projet&quot;);</span>
+        }
+
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (request.getName() != null) project.setName(request.getName());</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (request.getDescription() != null) project.setDescription(request.getDescription());</span>
+
+
+<span class="fc" id="L220">        notificationService.sendNotificationToUserId(</span>
+<span class="fc" id="L221">                project.getOwner().getId(),</span>
+<span class="fc" id="L222">                &quot;Votre projet \&quot;&quot; + project.getName() + &quot;\&quot; a été mis à jour.&quot;</span>
+        );
+
+<span class="fc" id="L225">        projectRepository.save(project);</span>
+
+<span class="fc" id="L227">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Task.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.models</a> &gt; <span class="el_source">Task.java</span></div><h1>Task.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.models;
+
+import jakarta.persistence.*;
+
+@Table(name = &quot;task&quot;)
+@Entity
+<span class="fc" id="L7">public class Task {</span>
+
+<span class="fc" id="L9">    public enum Priority {</span>
+<span class="fc" id="L10">        LOW, MEDIUM, HIGH</span>
+    }
+
+<span class="fc" id="L13">    public enum Status {</span>
+<span class="fc" id="L14">        PENDING, IN_PROGRESS, COMPLETED</span>
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String name;
+    private String description;
+    private Priority priority;
+    private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;project_id&quot;, nullable = false)
+    private Project project;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;assigned_to_id&quot;)
+    private ProjectMember assignedTo;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;created_by_id&quot;)
+    private ProjectMember createdBy;
+
+    public Integer getId() {
+<span class="fc" id="L39">        return id;</span>
+    }
+
+    public void setId(Integer id) {
+<span class="fc" id="L43">        this.id = id;</span>
+<span class="fc" id="L44">    }</span>
+
+    public String getName() {
+<span class="fc" id="L47">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L51">        this.name = name;</span>
+<span class="fc" id="L52">    }</span>
+
+    public String getDescription() {
+<span class="fc" id="L55">        return description;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="fc" id="L59">        this.description = description;</span>
+<span class="fc" id="L60">    }</span>
+
+    public Priority getPriority() {
+<span class="fc" id="L63">        return priority;</span>
+    }
+
+    public void setPriority(Priority priority) {
+<span class="fc" id="L67">        this.priority = priority;</span>
+<span class="fc" id="L68">    }</span>
+
+    public Status getStatus() {
+<span class="fc" id="L71">        return status;</span>
+    }
+
+    public void setStatus(Status status) {
+<span class="fc" id="L75">        this.status = status;</span>
+<span class="fc" id="L76">    }</span>
+
+    public Project getProject() {
+<span class="nc" id="L79">        return project;</span>
+    }
+
+    public void setProject(Project project) {
+<span class="fc" id="L83">        this.project = project;</span>
+<span class="fc" id="L84">    }</span>
+
+    public ProjectMember getAssignedTo() {
+<span class="fc" id="L87">        return assignedTo;</span>
+    }
+
+    public void setAssignedTo(ProjectMember assignedTo) {
+<span class="fc" id="L91">        this.assignedTo = assignedTo;</span>
+<span class="fc" id="L92">    }</span>
+
+    public ProjectMember getCreatedBy() {
+<span class="fc" id="L95">        return createdBy;</span>
+    }
+
+    public void setCreatedBy(ProjectMember createdBy) {
+<span class="fc" id="L99">        this.createdBy = createdBy;</span>
+<span class="fc" id="L100">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

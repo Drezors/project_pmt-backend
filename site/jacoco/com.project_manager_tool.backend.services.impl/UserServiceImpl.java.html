@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.services.impl</a> &gt; <span class="el_source">UserServiceImpl.java</span></div><h1>UserServiceImpl.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.services.impl;
+
+import com.project_manager_tool.backend.dao.UserRepository;
+
+import com.project_manager_tool.backend.dto.UserDto;
+import com.project_manager_tool.backend.dto.UserMapper;
+import com.project_manager_tool.backend.dto.request.UserLogin;
+import com.project_manager_tool.backend.exceptions.EntityDontExistException;
+import com.project_manager_tool.backend.models.User;
+import com.project_manager_tool.backend.services.UserService;
+//import com.project_manager_tool.backend.utils.JwtUtil;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L22">public class UserServiceImpl implements UserService {</span>
+
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public List&lt;UserDto&gt; getAllUsers() {
+<span class="nc" id="L32">        List&lt;User&gt; users = userRepository.findAll();</span>
+<span class="nc" id="L33">        return userMapper.toDtoList(users);</span>
+    }
+
+
+    @Override
+    public User findById(int id) {
+
+<span class="fc" id="L40">        Optional&lt;User&gt; user = userRepository.findById(id);</span>
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if(user.isPresent()) {</span>
+<span class="fc" id="L43">            return user.get();</span>
+        }
+
+<span class="fc" id="L46">        throw new EntityDontExistException(&quot;User not found&quot;);</span>
+    }
+
+    @Override
+    public int create(User user) {
+<span class="fc" id="L51">        return userRepository.save(user).getId();</span>
+    }
+
+    @Override
+    public int login(UserLogin userLogin) {
+<span class="fc" id="L56">        Optional&lt;User&gt; user = Optional.ofNullable(userRepository.findByEmail(userLogin.getEmail()));</span>
+
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (user.isPresent()) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (user.get().getPassword().equals(userLogin.getPassword())) {</span>
+<span class="fc" id="L60">                return user.get().getId();</span>
+            } else {
+<span class="fc" id="L62">                throw new IllegalArgumentException(&quot;Invalid password&quot;);</span>
+            }
+        }
+
+<span class="nc" id="L66">        throw new EntityDontExistException(&quot;User not found&quot;);</span>
+    }
+
+
+    @Override
+    public void update(int id, User user) {
+<span class="nc" id="L72">        user.setId(id);</span>
+<span class="nc" id="L73">        userRepository.save(user);</span>
+<span class="nc" id="L74">    }</span>
+
+    @Override
+    public void updatePartial(User existingUser, User newUser) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if(newUser.getPassword() != null) {</span>
+<span class="nc" id="L79">            existingUser.setPassword(newUser.getPassword());</span>
+        }
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if(newUser.getEmail() != null) {</span>
+<span class="nc" id="L83">            existingUser.setEmail(newUser.getEmail());</span>
+        }
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if(newUser.getUsername()!= null) {</span>
+<span class="nc" id="L87">            existingUser.setUsername(newUser.getUsername());</span>
+        }
+
+<span class="nc" id="L90">        userRepository.save(newUser);</span>
+<span class="nc" id="L91">    }</span>
+
+    @Override
+    public void delete(int id) {
+<span class="fc" id="L95">        userRepository.deleteById(id);</span>
+<span class="fc" id="L96">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.dto</a> &gt; <span class="el_source">ProjectMapper.java</span></div><h1>ProjectMapper.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.dto;
+
+import com.project_manager_tool.backend.models.Project;
+import com.project_manager_tool.backend.models.ProjectMember;
+import com.project_manager_tool.backend.models.Task;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
+
+@Component
+<span class="fc" id="L12">public class ProjectMapper {</span>
+
+    @Autowired
+    UserMapper userMapper;
+
+    public ProjectDto toDto(Project project) {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (project == null) return null;</span>
+
+<span class="fc" id="L20">        ProjectDto dto = new ProjectDto();</span>
+<span class="fc" id="L21">        dto.setId(project.getId());</span>
+<span class="fc" id="L22">        dto.setName(project.getName());</span>
+<span class="fc" id="L23">        dto.setDescription(project.getDescription());</span>
+<span class="fc" id="L24">        dto.setCreator(userMapper.toDto(project.getOwner()));</span>
+
+<span class="fc" id="L26">        dto.setMembers(project.getProjectMembers().stream()</span>
+<span class="fc" id="L27">                .map(this::toMemberDto)</span>
+<span class="fc" id="L28">                .collect(Collectors.toList()));</span>
+
+<span class="fc" id="L30">        dto.setTasks(project.getTasks().stream()</span>
+<span class="fc" id="L31">                .map(this::toTaskDto)</span>
+<span class="fc" id="L32">                .collect(Collectors.toList()));</span>
+
+<span class="fc" id="L34">        return dto;</span>
+    }
+
+    private ProjectMemberDto toMemberDto(ProjectMember member) {
+<span class="fc" id="L38">        ProjectMemberDto dto = new ProjectMemberDto();</span>
+<span class="fc" id="L39">        dto.setId(member.getId());</span>
+<span class="fc" id="L40">        dto.setRole(member.getRole());</span>
+<span class="fc" id="L41">        dto.setUser(userMapper.toDto(member.getUser()));</span>
+<span class="fc" id="L42">        return dto;</span>
+    }
+
+    private TaskDto toTaskDto(Task task) {
+<span class="fc" id="L46">        TaskDto dto = new TaskDto();</span>
+<span class="fc" id="L47">        dto.setId(task.getId());</span>
+<span class="fc" id="L48">        dto.setName(task.getName());</span>
+<span class="fc" id="L49">        dto.setDescription(task.getDescription());</span>
+<span class="fc" id="L50">        dto.setPriority(task.getPriority().name());</span>
+<span class="fc" id="L51">        dto.setStatus(task.getStatus().name());</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (task.getAssignedTo() != null) {</span>
+<span class="fc" id="L54">            dto.setAssignedUser(userMapper.toDto(task.getAssignedTo().getUser()));</span>
+        }
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (task.getCreatedBy() != null) {</span>
+<span class="fc" id="L58">            dto.setCreatedBy(userMapper.toDto(task.getCreatedBy().getUser()));</span>
+        }
+
+<span class="fc" id="L61">        return dto;</span>
+    }
+    public ProjectSummaryDto toSummaryDto(ProjectMember member) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (member == null) {</span>
+<span class="fc" id="L65">            return null;</span>
+        }
+<span class="fc" id="L67">        ProjectSummaryDto dto = new ProjectSummaryDto();</span>
+<span class="fc" id="L68">        dto.setProjectId(member.getProject().getId());</span>
+<span class="fc" id="L69">        dto.setProjectName(member.getProject().getName());</span>
+<span class="fc" id="L70">        dto.setProjectDescription(member.getProject().getDescription());</span>
+<span class="fc" id="L71">        dto.setRole(member.getRole());</span>
+<span class="fc" id="L72">        return dto;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

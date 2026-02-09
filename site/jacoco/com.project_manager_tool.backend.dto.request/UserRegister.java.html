@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserRegister.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.dto.request</a> &gt; <span class="el_source">UserRegister.java</span></div><h1>UserRegister.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.dto.request;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+<span class="nc" id="L5">public class UserRegister {</span>
+
+    @NotBlank
+    @Email
+    private String email;
+
+    @NotBlank
+    private String username;
+
+    @NotBlank
+    private String password;
+
+
+    public String getEmail() {
+<span class="nc" id="L19">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="nc" id="L23">        this.email = email;</span>
+<span class="nc" id="L24">    }</span>
+
+    public String getUsername() {
+<span class="nc" id="L27">        return username;</span>
+    }
+
+    public void setUsername(String username) {
+<span class="nc" id="L31">        this.username = username;</span>
+<span class="nc" id="L32">    }</span>
+
+    public String getPassword() {
+<span class="nc" id="L35">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="nc" id="L39">        this.password = password;</span>
+<span class="nc" id="L40">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

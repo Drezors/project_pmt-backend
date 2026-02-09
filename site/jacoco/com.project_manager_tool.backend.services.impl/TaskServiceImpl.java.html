@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.services.impl</a> &gt; <span class="el_source">TaskServiceImpl.java</span></div><h1>TaskServiceImpl.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.services.impl;
+
+import com.project_manager_tool.backend.dao.ProjectMemberRepository;
+import com.project_manager_tool.backend.dao.ProjectRepository;
+import com.project_manager_tool.backend.dao.TaskRepository;
+import com.project_manager_tool.backend.dto.TaskDto;
+import com.project_manager_tool.backend.dto.request.TaskRequestDto;
+import com.project_manager_tool.backend.models.Project;
+import com.project_manager_tool.backend.models.ProjectMember;
+import com.project_manager_tool.backend.models.Task;
+import com.project_manager_tool.backend.services.NotificationService;
+import com.project_manager_tool.backend.services.TaskService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+@Service
+<span class="fc" id="L23">public class TaskServiceImpl implements TaskService {</span>
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Override
+    public int create(int projectId, int creatorId, TaskRequestDto taskDto) {
+<span class="fc" id="L39">        Optional&lt;ProjectMember&gt; creatorOpt = projectMemberRepository</span>
+<span class="fc" id="L40">                .findByProjectIdAndUserId(projectId, creatorId);</span>
+
+<span class="pc bpc" id="L42" title="2 of 4 branches missed.">        if (creatorOpt.isEmpty() || creatorOpt.get().getRole() != ProjectMember.Role.ADMIN) {</span>
+<span class="nc" id="L43">            throw new IllegalStateException(&quot;Seuls les membres ADMIN peuvent créer des tâches.&quot;);</span>
+        }
+
+<span class="fc" id="L46">        Project project = projectRepository.findById(projectId)</span>
+<span class="pc" id="L47">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Projet non trouvé.&quot;));</span>
+
+<span class="fc" id="L49">        ProjectMember assignee = projectMemberRepository.findById(taskDto.getAssignedProjectMemberId())</span>
+<span class="pc" id="L50">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Membre assigné introuvable.&quot;));</span>
+
+        // 4. Crée la tâche
+<span class="fc" id="L53">        Task task = new Task();</span>
+<span class="fc" id="L54">        task.setName(taskDto.getName());</span>
+<span class="fc" id="L55">        task.setDescription(taskDto.getDescription());</span>
+<span class="fc" id="L56">        task.setPriority(taskDto.getPriority());</span>
+<span class="fc" id="L57">        task.setStatus(Task.Status.PENDING); // valeur par défaut</span>
+<span class="fc" id="L58">        task.setProject(project);</span>
+<span class="fc" id="L59">        task.setAssignedTo(assignee);</span>
+<span class="fc" id="L60">        task.setCreatedBy(creatorOpt.get());</span>
+
+<span class="fc" id="L62">        taskRepository.save(task);</span>
+
+
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (assignee != null) {</span>
+<span class="fc" id="L66">            notificationService.sendNotificationToUserId(</span>
+<span class="fc" id="L67">                    assignee.getUser().getId(),</span>
+<span class="fc" id="L68">                    &quot;Une nouvelle tâche \&quot;&quot; + task.getName() + &quot;\&quot; vous a été assignée dans le projet \&quot;&quot; + project.getName() + &quot;\&quot;.&quot;</span>
+            );
+        }
+
+
+
+<span class="fc" id="L74">        return task.getId();</span>
+    }
+
+    @Override
+    public void updateStatus(int taskId, int memberId, Task.Status newStatus) {
+<span class="fc" id="L79">        Task task = taskRepository.findById(taskId)</span>
+<span class="pc" id="L80">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Tâche introuvable&quot;));</span>
+
+<span class="fc" id="L82">        ProjectMember member = projectMemberRepository.findById(memberId)</span>
+<span class="pc" id="L83">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Membre non trouvé&quot;));</span>
+
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        boolean isAdmin = member.getRole() == ProjectMember.Role.ADMIN;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        boolean isAssignee = task.getAssignedTo() != null &amp;&amp;</span>
+<span class="pc bnc" id="L87" title="All 2 branches missed.">                task.getAssignedTo().getId().equals(member.getId());</span>
+
+<span class="pc bpc" id="L89" title="3 of 4 branches missed.">        if (!isAdmin &amp;&amp; !isAssignee) {</span>
+<span class="nc" id="L90">            throw new IllegalStateException(&quot;Seul l'assigné ou un admin peut changer le statut.&quot;);</span>
+        }
+
+<span class="fc" id="L93">        task.setStatus(newStatus);</span>
+
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (task.getCreatedBy() != null) {</span>
+<span class="nc" id="L96">            notificationService.sendNotificationToUserId(</span>
+<span class="nc" id="L97">                    task.getCreatedBy().getId(),</span>
+<span class="nc" id="L98">                    &quot;Le statut de la tâche \&quot;&quot; + task.getName() + &quot;\&quot; a été changé en \&quot;&quot; + newStatus.name() + &quot;\&quot;.&quot;</span>
+            );
+        }
+
+<span class="fc" id="L102">        taskRepository.save(task);</span>
+<span class="fc" id="L103">    }</span>
+
+    @Override
+    public void updatePriority(int taskId, int projectMemberId, Task.Priority newPriority) {
+<span class="fc" id="L107">        Task task = taskRepository.findById(taskId)</span>
+<span class="pc" id="L108">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Tâche introuvable&quot;));</span>
+
+<span class="fc" id="L110">        ProjectMember admin = projectMemberRepository.findById(projectMemberId)</span>
+<span class="pc" id="L111">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Membre non trouvé&quot;));</span>
+
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (admin.getRole() != ProjectMember.Role.ADMIN) {</span>
+<span class="nc" id="L114">            throw new IllegalStateException(&quot;Seul un administrateur peut modifier la priorité.&quot;);</span>
+        }
+
+<span class="fc" id="L117">        task.setPriority(newPriority);</span>
+<span class="fc" id="L118">        taskRepository.save(task);</span>
+<span class="fc" id="L119">    }</span>
+
+    @Override
+    public void deleteTask(int taskId, int projectMemberId) {
+<span class="fc" id="L123">        Task task = taskRepository.findById(taskId)</span>
+<span class="pc" id="L124">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Tâche introuvable&quot;));</span>
+
+<span class="fc" id="L126">        ProjectMember admin = projectMemberRepository.findById(projectMemberId)</span>
+<span class="pc" id="L127">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Membre non trouvé&quot;));</span>
+
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (admin.getRole() != ProjectMember.Role.ADMIN) {</span>
+<span class="nc" id="L130">            throw new IllegalStateException(&quot;Seul un administrateur peut supprimer une tâche.&quot;);</span>
+        }
+
+<span class="fc" id="L133">        taskRepository.delete(task);</span>
+<span class="fc" id="L134">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

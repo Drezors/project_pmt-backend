@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.controllers</a> &gt; <span class="el_source">ProjectController.java</span></div><h1>ProjectController.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.controllers;
+
+import com.project_manager_tool.backend.dto.ProjectDto;
+import com.project_manager_tool.backend.dto.ProjectSummaryDto;
+import com.project_manager_tool.backend.dto.request.ProjectMemberCreation;
+import com.project_manager_tool.backend.dto.request.ProjectUpdateRequestDto;
+import com.project_manager_tool.backend.models.Project;
+import com.project_manager_tool.backend.services.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/projects&quot;)
+<span class="fc" id="L17">public class ProjectController {</span>
+
+    @Autowired
+    private ProjectService projectService;
+
+    @PostMapping()
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public int create(@RequestParam(&quot;ownerId&quot;) int ownerId, @RequestBody Project project) {
+<span class="fc" id="L25">        return projectService.create(ownerId, project);</span>
+    }
+
+    @PostMapping(&quot;/{projectId}&quot;)
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public int createProjectMember(
+            @PathVariable(&quot;projectId&quot;) int projectId,
+            @RequestParam(&quot;projectAdminId&quot;) int projectAdminId,
+            @RequestBody  ProjectMemberCreation newProjectMember) {
+
+<span class="fc" id="L35">        return projectService.createProjectMember(projectId, projectAdminId, newProjectMember);</span>
+    }
+    @DeleteMapping(&quot;/{projectId}/members/{userId}&quot;)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProjectMember(
+            @PathVariable(&quot;projectId&quot;) int projectId,
+            @PathVariable(&quot;userId&quot;) int userId,
+            @RequestParam(&quot;deleterId&quot;) int deleterId) {
+
+<span class="fc" id="L44">        projectService.deleteProjectMember(projectId, userId, deleterId);</span>
+<span class="fc" id="L45">    }</span>
+
+
+    @GetMapping(&quot;/{projectId}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ProjectDto getProjectById(
+            @PathVariable(&quot;projectId&quot;) int projectId,
+            @RequestParam(&quot;userId&quot;) int userId) {
+
+<span class="fc" id="L54">        return projectService.getProjectById(projectId, userId);</span>
+    }
+
+
+    @GetMapping
+    @ResponseStatus(code = HttpStatus.OK)
+    public List&lt;ProjectSummaryDto&gt; findAll(@RequestParam(&quot;memberId&quot;) int memberId) {
+<span class="fc" id="L61">        return projectService.findAllByUserId(memberId);</span>
+    }
+
+
+    @PutMapping(&quot;/{projectId}/update&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateProject(
+            @PathVariable int projectId,
+            @RequestParam int adminId,
+            @RequestBody ProjectUpdateRequestDto updateRequest) {
+<span class="fc" id="L71">        projectService.updateProject(projectId, adminId, updateRequest);</span>
+<span class="fc" id="L72">    }</span>
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

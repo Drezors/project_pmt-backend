@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificationController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.controllers</a> &gt; <span class="el_source">NotificationController.java</span></div><h1>NotificationController.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.controllers;
+
+import com.project_manager_tool.backend.models.Notification;
+import com.project_manager_tool.backend.services.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+
+@RestController
+@RequestMapping(&quot;/notifications&quot;)
+<span class="fc" id="L14">public class NotificationController {</span>
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @GetMapping(&quot;/{userId}&quot;)
+    public List&lt;Notification&gt; getNotifications(@PathVariable int userId) {
+<span class="fc" id="L21">        return notificationService.getNotificationsForUser(userId);</span>
+    }
+
+    @PatchMapping(&quot;/{notificationId}/read&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void markAsRead(@PathVariable int notificationId) {
+<span class="fc" id="L27">        notificationService.markAsRead(notificationId);</span>
+<span class="fc" id="L28">    }</span>
+
+    @PatchMapping(&quot;/read-all/{userId}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void markAllAsRead(@PathVariable int userId) {
+<span class="fc" id="L33">        notificationService.markAllAsRead(userId);</span>
+<span class="fc" id="L34">    }</span>
+
+    @DeleteMapping(&quot;/{notificationId}&quot;)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNotification(@PathVariable int notificationId) {
+<span class="fc" id="L39">        notificationService.deleteNotification(notificationId);</span>
+<span class="fc" id="L40">    }</span>
+
+    @PostMapping(&quot;/send&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void sendNotification(@RequestParam int userId, @RequestParam String message) {
+<span class="fc" id="L45">        notificationService.sendNotificationToUserId(userId, message);</span>
+<span class="fc" id="L46">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

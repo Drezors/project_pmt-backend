@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificationServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.services.impl</a> &gt; <span class="el_source">NotificationServiceImpl.java</span></div><h1>NotificationServiceImpl.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.services.impl;
+
+import com.project_manager_tool.backend.dao.NotificationRepository;
+import com.project_manager_tool.backend.dao.UserRepository;
+import com.project_manager_tool.backend.models.Notification;
+import com.project_manager_tool.backend.models.User;
+import com.project_manager_tool.backend.services.NotificationService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+<span class="fc" id="L15">public class NotificationServiceImpl implements NotificationService {</span>
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public void sendNotification(User user, String message) {
+<span class="fc" id="L24">        Notification notification = new Notification();</span>
+<span class="fc" id="L25">        notification.setUser(user);</span>
+<span class="fc" id="L26">        notification.setMessage(message);</span>
+<span class="fc" id="L27">        notificationRepository.save(notification);</span>
+<span class="fc" id="L28">    }</span>
+
+    public List&lt;Notification&gt; getNotificationsForUser(int userId) {
+<span class="nc" id="L31">        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);</span>
+    }
+
+    public void markAsRead(int notificationId) {
+<span class="fc" id="L35">        Notification notif = notificationRepository.findById(notificationId)</span>
+<span class="pc" id="L36">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Notification non trouvée&quot;));</span>
+<span class="fc" id="L37">        notif.setRead(true);</span>
+<span class="fc" id="L38">        notificationRepository.save(notif);</span>
+<span class="fc" id="L39">    }</span>
+
+    public void markAllAsRead(int userId) {
+<span class="nc" id="L42">        List&lt;Notification&gt; notifs = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        for (Notification notif : notifs) {</span>
+<span class="nc" id="L44">            notif.setRead(true);</span>
+<span class="nc" id="L45">        }</span>
+<span class="nc" id="L46">        notificationRepository.saveAll(notifs);</span>
+<span class="nc" id="L47">    }</span>
+
+    public void deleteNotification(int notificationId) {
+<span class="fc" id="L50">        notificationRepository.deleteById(notificationId);</span>
+<span class="fc" id="L51">    }</span>
+
+    // Envoi d'une notification à partir d'un userId brut
+    public void sendNotificationToUserId(int userId, String message) {
+<span class="fc" id="L55">        User user = userRepository.findById(userId)</span>
+<span class="pc" id="L56">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Utilisateur non trouvé&quot;));</span>
+<span class="fc" id="L57">        sendNotification(user, message);</span>
+<span class="fc" id="L58">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

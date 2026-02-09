@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-management-backend</a> &gt; <a href="index.source.html" class="el_package">com.project_manager_tool.backend.models</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package com.project_manager_tool.backend.models;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Table(name = &quot;user&quot;)
+@Entity
+<span class="fc" id="L16">public class User {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String username;
+    private String email;
+    private String password;
+
+    @OneToMany(mappedBy = &quot;user&quot;, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set&lt;ProjectMember&gt; projectMembers;
+
+    @OneToMany(mappedBy = &quot;user&quot;, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set&lt;Notification&gt; notifications;
+
+
+
+    // Getters and Setters
+
+
+    public Integer getId() {
+<span class="fc" id="L38">        return id;</span>
+    }
+
+    public void setId(Integer id) {
+<span class="fc" id="L42">        this.id = id;</span>
+<span class="fc" id="L43">    }</span>
+
+    public String getUsername() {
+<span class="fc" id="L46">        return username;</span>
+    }
+
+    public void setUsername(String username) {
+<span class="fc" id="L50">        this.username = username;</span>
+<span class="fc" id="L51">    }</span>
+
+    public String getEmail() {
+<span class="fc" id="L54">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="fc" id="L58">        this.email = email;</span>
+<span class="fc" id="L59">    }</span>
+
+    public String getPassword() {
+<span class="fc" id="L62">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="fc" id="L66">        this.password = password;</span>
+<span class="fc" id="L67">    }</span>
+
+    public Set&lt;ProjectMember&gt; getProjectMembers() {
+<span class="nc" id="L70">        return projectMembers;</span>
+    }
+
+    public void setProjectMembers(Set&lt;ProjectMember&gt; projectMembers) {
+<span class="nc" id="L74">        this.projectMembers = projectMembers;</span>
+<span class="nc" id="L75">    }</span>
+
+    public Set&lt;Notification&gt; getNotifications() {
+<span class="nc" id="L78">        return notifications;</span>
+    }
+
+    public void setNotifications(Set&lt;Notification&gt; notifications) {
+<span class="nc" id="L82">        this.notifications = notifications;</span>
+<span class="nc" id="L83">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

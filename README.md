@@ -61,8 +61,7 @@ Le projet inclut :
 
 ## Résultats des tests et couverture
 
-Les résultats des tests unitaires et la couverture de code sont générés automatiquement par Maven/Jacoco et se trouvent dans le dossier target du projet backend : `project_pmt-backend/target/site/jacoco/index.html`.
-
+Les résultats des tests unitaires et la couverture de code sont générés automatiquement par Maven/Jacoco et se trouvent dans le dossier target du projet backend : `project_pmt-backend/target/site/jacoco/index.html` (version local) ou directement `project_pmt-backend/site/jacoco/index.html` (pour la vérification).
 
 Pour faciliter la lecture, une **capture d'écran de la couverture** est également incluse dans le repo :
 
