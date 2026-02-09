@@ -6,17 +6,16 @@ import com.project_manager_tool.backend.dto.ProjectSummaryDto;
 import com.project_manager_tool.backend.dto.request.ProjectMemberCreation;
 import com.project_manager_tool.backend.dto.request.ProjectUpdateRequestDto;
 import com.project_manager_tool.backend.models.Project;
-import com.project_manager_tool.backend.models.ProjectMember;
 import com.project_manager_tool.backend.services.ProjectService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 
@@ -24,27 +23,22 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ContextConfiguration(classes = {ProjectControllerTest.TestConfig.class})
+@ExtendWith(MockitoExtension.class)
 class ProjectControllerTest {
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public ProjectService projectService() {
-            return mock(ProjectService.class);
-        }
-    }
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
+    @Mock
     private ProjectService projectService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private ProjectController projectController;
+
+    private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(projectController).build();
+    }
 
     @Test
     void create_shouldReturnProjectId() throws Exception {
@@ -64,7 +58,6 @@ class ProjectControllerTest {
     void createProjectMember_shouldReturnId() throws Exception {
         ProjectMemberCreation member = new ProjectMemberCreation();
         member.setUserId(2);
-        member.setRole(ProjectMember.Role.MEMBER);
 
         doReturn(44).when(projectService).createProjectMember(eq(10), eq(1), any());
 

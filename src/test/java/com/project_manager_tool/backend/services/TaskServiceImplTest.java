@@ -137,13 +137,13 @@ class TaskServiceImplTest {
         Task task = new Task();
         task.setId(taskId);
 
-
         when(projectMemberRepository.findById(adminId)).thenReturn(Optional.of(admin));
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
-        doNothing().when(taskRepository).deleteById(taskId);
+        doNothing().when(taskRepository).delete(task);
 
         assertDoesNotThrow(() -> taskService.deleteTask(taskId, adminId));
-        verify(taskRepository, times(1)).deleteById(taskId);
+
+        verify(taskRepository, times(1)).delete(task);
     }
 
 }

@@ -46,6 +46,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectMapper projectMapper;
 
+    public void setProjectRepository(ProjectRepository repo) { this.projectRepository = repo; }
+    public void setProjectMemberRepository(ProjectMemberRepository repo) { this.projectMemberRepository = repo; }
+    public void setUserRepository(UserRepository repo) { this.userRepository = repo; }
+    public void setNotificationService(NotificationService service) { this.notificationService = service; }
+    public void setUserService(UserServiceImpl service) { this.userService = service; }
+    public void setProjectMapper(ProjectMapper mapper) { this.projectMapper = mapper; }
+
 
     @Override
     public int create(int ownerId, Project project) {
